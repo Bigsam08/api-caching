@@ -1,0 +1,33 @@
+[
+  {
+    "id": "1",
+    "name": "Samuel",
+    "email": "samuel@gmail.com"
+  },
+
+  {
+    "id": "2",
+    "name": "Michael",
+    "email": "sichael@gmail.com"
+  },
+  {
+    "id": "3",
+    "name": "Abimbola",
+    "email": "abimbs@gmail.com"
+  },
+  {
+    "id": "4",
+    "name": "Alex",
+    "email": "alex2gmail.com"
+  },
+  {
+    "id": "5",
+    "name": "Oluwadara",
+    "email": "dara@gmail.com"
+  },
+  {
+    "id": "6",
+    "name": "Toby",
+    "email": "toby@gmail.com"
+  }
+]
