@@ -10,8 +10,10 @@ This is a simple Node.js API that:
 
 ## 🚀 Features
 
-- **GET `/api/users`** — Fetch all users from `users.json`, cache result in Redis.
-- **GET `/api/users/:id`** — Fetch a single user by ID from `users.json`.
+- `GET /api/users` — Fetch all users from `users.json`, cache result in Redis.
+- `GET /api/users/:id` — Fetch a single user by ID from `users.json`.
+
+---
 
 ## 📁 Project Structure
 
@@ -21,11 +23,17 @@ This is a simple Node.js API that:
 │ ├── config/
 │ │ └── redis.js # Redis client connection
 │ ├── controllers/
-│ │ └── userController.js #
+│ │ └── userController.js # Route logic
 │ └── routes/
 │ └── user.route.js # API route definitions
 ├── server.js # Main server file
 └── README.md
+
+yaml
+Copy
+Edit
+
+---
 
 ## 📦 Requirements
 
@@ -36,76 +44,84 @@ This is a simple Node.js API that:
 
 ## 📥 Setup
 
-### Clone the repo
+### Clone the repo and run the server
 
-`````bash
+```bash
 git clone https://github.com/bigsam08/node-redis-api-caching.git
 cd node-redis-api-caching
 npm install
 
-# start redis server in a new treminal
+# Start Redis server in a new terminal
 redis-server
 
-# start server
+# Start the Node.js server
 npm run dev
-✅ Now your API is running at: [http://localhost:5001](http://localhost:5001)
- ```
- ---
-## 📦 API Routes & Usage Examples
+✅ Now your API is running at: http://localhost:5001
+
+📦 API Routes & Usage Examples
 ✅ Get All Users
-- Route: GET /api/users
+Route: GET /api/users
 
 Description:
 
-- Checks Redis for cached users.
+Checks Redis for cached users.
 
-- If found, returns from cache.
+If found, returns from cache.
 
-- If not, reads from users.json and caches result for 60 seconds.
+If not, reads from users.json and caches the result for 60 seconds.
 
- Example using cURL
-```bash
-curl http://localhost:5001/api/users/2
-
-Response:
-
+📌 Example using cURL
+bash
+Copy
+Edit
+curl http://localhost:5001/api/users
+📥 Sample Response
+json
+Copy
+Edit
 [
   {
     "id": 1,
     "name": "Grace Hopper",
     "email": "grace@example.com",
-    "role": "engineer"
   },
   {
     "id": 2,
     "name": "Ada Lovelace",
     "email": "ada@example.com",
-    "role": "developer"
   },
   {
     "id": 3,
     "name": "Alan Turing",
-    "email": "
+    "email": "alan@example.com",
+  }
+]
+✅ Get Single User
+Route: GET /api/users/:id
 
+Description: Fetches a single user by id.
 
-```
-✅ Get single user
-- Route: GET /api/user/:id
+📌 Example using Postman
+Method: GET
 
- Example using Postman:
- ```bash
-    Method: GET URL: http://localhost:5001/api/users/2
-** Response **
-    {
+URL: http://localhost:5001/api/users/2
+
+📥 Sample Response
+json
+Copy
+Edit
+{
   "id": 2,
   "name": "Ada Lovelace",
   "email": "ada@example.com",
 }
-```
-
-## 📝 License
-
+📝 License
 This project is licensed under the MIT License.
+
+sql
+Copy
+Edit
+MIT License
 
 Copyright (c) 2025 bigsam
 
@@ -126,3 +142,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,  
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE  
 SOFTWARE.
+css
+Copy
+Edit
