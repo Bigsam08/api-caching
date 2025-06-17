@@ -4,14 +4,22 @@
 
 const express = require("express");
 const app = express();
-const usersRouter = require("./src/routes/user.route")
+const usersRouter = require("./src/routes/user.route") // routes 
+const { redisStart } = require("./src/config/redis"); //redis connection
+
 
 const PORT = 5001;
 
+// connect redis
+redisStart();
+
+// root homepage
 app.get("/", (req, res) => {
-    res.json({ message: "welcome to api homepage", status: 200, success: true })
-})
+    return res.status(200).json({ message: "Welcome to my api homepage" });
+});
 
-app.use("/api", usersRouter);
+// routes
+app.use("/api", usersRouter); // servers http responses
 
-app.listen(PORT, () => console.log(`Api server is running live on http://localhost:${PORT}`))
+// server entry
+app.listen(PORT, () => console.log(`🛩️  Api server is running live on http://localhost:${PORT}`))

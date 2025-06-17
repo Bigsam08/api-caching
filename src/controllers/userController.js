@@ -4,32 +4,55 @@
 
 const fs = require("fs"); // to read system file
 const path = require("path"); // to access a file path
+const { redisClient } = require("../config/redis");  // import redis for caching
 
-const filePath = path.join(__dirname, "../db/users.json");
+const dbFile = path.join(__dirname, "../db/users.json");
 
 /** fetch all users from the db */
-const getAllusers = (req, res) => {
-    if (!fs.existsSync(filePath)) {
-        console.log("Db file cannot be found")
-        res.status(500).json({ error: "DB file path not found", success: false });
-        return;
+const getAllusers = async (req, res) => {
+    const redisKey = "users";
+
+    try {
+
+        const cache = await redisClient.get(redisKey);
+        if (cache) {
+            console.log("Data found in cache ✅")
+            return res.status(200).json(JSON.parse(cache));
+        }
+        // couldn't fetch in cache search db file
+        // checks if the db file exist
+
+        if (!fs.existsSync(dbFile)) {
+            return res.status(404).json({ error: "DB file not found - 404" });
+        }
+        // file exist fetch data
+        fs.readFile(dbFile, "utf8", async (error, data) => {
+            if (error) {
+                return res.status(500).json({ error: "unable to read db file" })
+            }
+
+            try {
+
+                const parsedData = JSON.parse(data);
+
+                //save the data to redis and set expry to 1 min
+                // 3 args they key exp time and the file to save in json
+
+                await redisClient.setEx(redisKey, 60, JSON.stringify(parsedData));
+                console.log("📦 data has been saved to cache ..")
+
+                return res.status(200).json(parsedData);
+
+            } catch (error) {
+                return res.status(500).json({ error: "db file corrupted" });
+            }
+
+        })
+
+    } catch (error) {
+        console.error("❌ Redis error:", err.message);
+        res.status(500).json({ error: "Internal error with caching" });
     }
-
-    /** if file exits fetch the file using read */
-    fs.readFile(filePath, "utf8", (err, data) => {
-        if (err) {
-            return res.status(500).json({ error: "Error occurred fetching all users" });
-        }
-        // parsed the data back to js json object
-        try {
-            const parsedData = JSON.parse(data);
-            res.status(200).json(parsedData)
-        } catch (parseError) {
-            res.status(500).json({ error: "Error! file not valid json format for parsing", message: parseError });
-            return
-        }
-
-    })
 
 }
 
@@ -37,14 +60,14 @@ const getAllusers = (req, res) => {
 const getUser = (req, res) => {
     const { id } = req.params;
 
-    if (!fs.existsSync(filePath)) {
+    if (!fs.existsSync(dbFile)) {
         return res.status(404).json({ error: "DB file path not found", success: false });
     }
     /** search for the user via id and display all */
-    fs.readFile(filePath, "utf8", (err, data) => {
+    fs.readFile(dbFile, "utf8", (err, data) => {
         if (err) {
             return res.status(500).json({ error: "Error occurred fetching all users" });
-           
+
         }
         try {
             // prase the data into json
