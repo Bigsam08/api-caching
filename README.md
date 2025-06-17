@@ -8,6 +8,26 @@ This is a simple Node.js API that:
 
 ---
 
+## 🧑‍💻 Project Description
+
+This is a lightweight RESTful API built with **Node.js** and **Express**, demonstrating how to integrate **Redis** caching into a backend application.
+
+The project simulates a basic user database using a local `users.json` file and exposes two primary API endpoints:
+
+- `GET /api/users` – Returns all users from the JSON "database", caching the result in Redis for faster subsequent access.
+- `GET /api/users/:id` – Returns a single user by their ID, fetched directly from the JSON file.
+
+### 🎯 Key Objectives
+
+- Showcase how Redis can be used to **cache repeated data requests**.
+- Reduce unnecessary reads from the file/database.
+- Improve performance of backend APIs.
+- Provide a **simple and beginner-friendly** structure for understanding Node.js + Redis integration.
+
+This project is perfect for developers looking to learn or demonstrate how caching improves API performance in real-world applications.
+
+---
+
 ## 🚀 Features
 
 - `GET /api/users` — Fetch all users from `users.json`, cache result in Redis.
