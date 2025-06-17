@@ -17,21 +17,22 @@ This is a simple Node.js API that:
 
 ## 📁 Project Structure
 
-├── db/
-│ └── users.json # Mock database
-├── src/
-│ ├── config/
-│ │ └── redis.js # Redis client connection
-│ ├── controllers/
-│ │ └── userController.js # Route logic
-│ └── routes/
-│ └── user.route.js # API route definitions
-├── server.js # Main server file
-└── README.md
+``` bash
 
-yaml
-Copy
-Edit
+node-redis-api-caching/
+├── db/
+│   └── users.json              # Mock user database (JSON file)
+├── src/
+│   ├── config/
+│   │   └── redis.js            # Redis connection setup
+│   ├── controllers/
+│   │   └── userController.js   # Route logic (with Redis caching)
+│   └── routes/
+│       └── user.route.js       # API route definitions
+├── server.js                   # Entry point of the server
+├── package.json
+└── README.md                   # Project documentation
+```
 
 ---
 
@@ -47,38 +48,46 @@ Edit
 ### Clone the repo and run the server
 
 ```bash
+
+
 git clone https://github.com/bigsam08/node-redis-api-caching.git
 cd node-redis-api-caching
 npm install
-
-# Start Redis server in a new terminal
-redis-server
-
-# Start the Node.js server
 npm run dev
-✅ Now your API is running at: http://localhost:5001
 
-📦 API Routes & Usage Examples
+```
+
+### In a new terminal start the redis server
+
+```bash
+redis-server
+```
+
+---
+
+## 📦 API Routes & Usage Examples
+
 ✅ Get All Users
-Route: GET /api/users
 
-Description:
+- Route: GET /api/users
 
-Checks Redis for cached users.
+- **Description**:
 
-If found, returns from cache.
+- Checks Redis for cached users.
 
-If not, reads from users.json and caches the result for 60 seconds.
+- If found, returns from cache.
 
-📌 Example using cURL
-bash
-Copy
-Edit
+- If not, reads from users.json and caches the result for 60 seconds.
+
+📌 **Example using cURL**
+
+```bash
 curl http://localhost:5001/api/users
-📥 Sample Response
-json
-Copy
-Edit
+```
+
+📥 **Sample Response**
+
+```bash
 [
   {
     "id": 1,
@@ -96,52 +105,36 @@ Edit
     "email": "alan@example.com",
   }
 ]
-✅ Get Single User
-Route: GET /api/users/:id
+```
 
-Description: Fetches a single user by id.
+### ✅ Get Single User
+
+- Route: GET /api/users/:id
+
+**Description**: Fetches a single user by id.
 
 📌 Example using Postman
 Method: GET
 
-URL: http://localhost:5001/api/users/2
+```bash
+http://localhost:5001/api/users/2
+```
 
-📥 Sample Response
-json
-Copy
-Edit
+📥 **Sample Response**
+
+```bash
 {
   "id": 2,
   "name": "Ada Lovelace",
   "email": "ada@example.com",
 }
-📝 License
-This project is licensed under the MIT License.
+```
 
-sql
-Copy
-Edit
+---
+
+## 📝  License
+
+This project is licensed under the MIT License.
 MIT License
 
 Copyright (c) 2025 bigsam
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights  
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell  
-copies of the Software, and to permit persons to whom the Software is  
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all  
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR  
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,  
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE  
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER  
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,  
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE  
-SOFTWARE.
-css
-Copy
-Edit
