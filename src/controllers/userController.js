@@ -6,17 +6,20 @@ const fs = require("fs"); // to read system file
 const path = require("path"); // to access a file path
 const { redisClient } = require("../config/redis");  // import redis for caching
 
+
 const dbFile = path.join(__dirname, "../db/users.json");
 
 /** fetch all users from the db */
 const getAllusers = async (req, res) => {
     const redisKey = "users";
+    const cacheExp = 120; // expiration time in seconds equal 2 mins
 
     try {
 
         const cache = await redisClient.get(redisKey);
         if (cache) {
             console.log("Data found in cache ✅")
+            res.set("Cache-Control", `public, max-age=${cacheExp}`);
             return res.status(200).json(JSON.parse(cache));
         }
         // couldn't fetch in cache search db file
@@ -35,12 +38,12 @@ const getAllusers = async (req, res) => {
 
                 const parsedData = JSON.parse(data);
 
-                //save the data to redis and set expry to 1 min
+                //save the data to redis and set expry to 2 min
                 // 3 args they key exp time and the file to save in json
 
-                await redisClient.setEx(redisKey, 60, JSON.stringify(parsedData));
+                await redisClient.setEx(redisKey, cacheExp, JSON.stringify(parsedData));
                 console.log("📦 data has been saved to cache ..")
-
+                res.set("Cache-Control", `public, max-age=${cacheExp}`);
                 return res.status(200).json(parsedData);
 
             } catch (error) {
@@ -57,39 +60,52 @@ const getAllusers = async (req, res) => {
 }
 
 /** fetch a specific user from the db */
-const getUser = (req, res) => {
+const getUser = async (req, res) => {
     const { id } = req.params;
+    const cacheKey = `${id}`;
+    const cacheExp = 120 // set in seconds to 2 mins
 
-    if (!fs.existsSync(dbFile)) {
-        return res.status(404).json({ error: "DB file path not found", success: false });
-    }
-    /** search for the user via id and display all */
-    fs.readFile(dbFile, "utf8", (err, data) => {
-        if (err) {
-            return res.status(500).json({ error: "Error occurred fetching all users" });
+    try {
+        // check cache for user
+        // set exp if found and set header
+        const cacheUser = await redisClient.get(cacheKey);
 
+        if (cacheUser) {
+            console.log("User found in cache ✅");
+            res.set("Cache-Control", `public, max-age=${cacheExp}`);
+            return res.status(200).json(JSON.parse(cacheUser));
         }
-        try {
-            // prase the data into json
-            const parsedData = JSON.parse(data);
 
-            // find any matching id with the params id
-            const findUser = parsedData.find(user => String(user.id) === String(id));
+        // check db file if not exist in cache
+        if (!fs.existsSync(dbFile)) {
+            return res.status(404).json({ error: "DB File does not exist" });
+        }
 
-            // throw a 404 if id doesn't match any user in the db
-            if (!findUser) {
-                res.status(404).json({ message: "User not found" });
-                return;
+        // read db file
+        fs.readFile(dbFile, "utf8", async (err, data) => {
+            if (err) {
+                res.status(500).json({ error: "Error unable to read file" });
             }
-            return res.status(200).json(findUser);
+            try {
+                const parsedUser = JSON.parse(data);
 
-        } catch (parseError) {
-            console.log("Invalid Json File")
-            res.status(500).json({ error: "Error! file not valid json format for parsing", message: parseError });
-            return
-        }
-    })
+                const user = parsedUser.find((u) => String(u.id) === String(id));
 
+                if (!user) return res.status(404).json({ error: "User does not exist" });
+
+                // save user to cache
+                await redisClient.setEx(cacheKey, cacheExp, JSON.stringify(user));
+                console.log('📦  user saved to cache');
+                return res.status(200).json(user)
+
+            } catch (err) {
+                res.status(500).json({ error: err.message, message: "File corrupted" })
+            }
+        })
+
+    } catch (error) {
+         res.status(500).json({ error: err.message, message: "❌  Error connecting to redis" })
+    }
 
 }
 
